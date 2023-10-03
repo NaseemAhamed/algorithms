@@ -1,5 +1,7 @@
 import java.util.*;
 
+//Cover all or none.
+
 class Pair {
     String source;
     String destination;
@@ -23,18 +25,30 @@ public class ConstructItinerary {
             Collections.sort(destinations);
         }
 
-        dfs(graph, startSource, itinerary);
-
-        return itinerary;
+        if(dfs(graph, startSource, itinerary, tickets.size())){
+            return itinerary;
+        }
+        else{
+            return new ArrayList<>();
+        }
     }
 
-    public void dfs(Map<String, List<String>> graph, String airport, List<String> itinerary) {
+    public boolean dfs(Map<String, List<String>> graph, String airport, List<String> itinerary, int totalTickets) {
+        itinerary.add(airport);
+
+        if(itinerary.size()==totalTickets+1) {
+            return true;
+        }
+
         List<String> destinations = graph.get(airport);
         while (destinations != null && !destinations.isEmpty()) {
             String nextSourceToExplore = destinations.remove(0);
-            dfs(graph, nextSourceToExplore, itinerary);
+            if(dfs(graph, nextSourceToExplore, itinerary,totalTickets)){
+                return true;
+            }
         }
-        itinerary.add(0,airport);
+
+        return false;
     }
 
     public static void main(String[] args) {
@@ -42,10 +56,10 @@ public class ConstructItinerary {
         ConstructItinerary constructItinerary = new ConstructItinerary();
         List<Pair> tickets = new ArrayList<>();
         tickets.add(new Pair("JFK", "SFO"));
-        tickets.add(new Pair("JFK", "ATL"));
         tickets.add(new Pair("SFO", "ATL"));
-        tickets.add(new Pair("ATL", "JFK"));
-        tickets.add(new Pair("ATL", "SFO"));
+        tickets.add(new Pair("ATL", "LHR"));
+        //tickets.add(new Pair("RAN", "DOM"));
+
 
         List<String> result = constructItinerary.constructItinerary(tickets, "JFK");
         for (String element : result) {
